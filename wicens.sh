@@ -3248,8 +3248,8 @@ F_cru() {
 		;;
 
 		'create')
-			cru a wicens "*/${cron_check_freq} * * * * $script_name_full cron"
-			F_log_terminal_ok "Added entry in cron(cru) with ${cron_check_freq}m interval"
+			#cru a wicens "*/${cron_check_freq} * * * * $script_name_full cron"
+			#F_log_terminal_ok "Added entry in cron(cru) with ${cron_check_freq}m interval"
 		;;
 
 		'remove')
@@ -3268,37 +3268,38 @@ F_serv_start() {
 	case "$1" in
 		'check')
 			grep -Fq "$script_name_full cron" /jffs/scripts/services-start 2> /dev/null && return 0
-			return 1
+			#return 1
+			return 0
 		;;
 
 		'create')
-			if [ -f /jffs/scripts/services-start ] ; then
+			#if [ -f /jffs/scripts/services-start ] ; then
 				F_crlf '/jffs/scripts/services-start'
 				F_chmod '/jffs/scripts/services-start'
 
-				if ! grep -Fq '#!/bin/sh' /jffs/scripts/services-start ; then
-					sed -i '1 i\#!/bin/sh' /jffs/scripts/services-start
-					F_log_terminal_fail "Your services-start does not contain a '#!/bin/sh'"
-					F_log_terminal_ok "Added #!/bin/sh to top of services-start file"
-				fi
+				#if ! grep -Fq '#!/bin/sh' /jffs/scripts/services-start ; then
+				#	sed -i '1 i\#!/bin/sh' /jffs/scripts/services-start
+				#	F_log_terminal_fail "Your services-start does not contain a '#!/bin/sh'"
+				#	F_log_terminal_ok "Added #!/bin/sh to top of services-start file"
+				#fi
 
-				{
-					F_printfstr "/usr/sbin/cru a wicens \"*/${cron_check_freq} * * * * $script_name_full cron\"   # added by wicens $(F_date r)"
-					F_printfstr "/usr/bin/logger -t \"services-start[\$\$]\" \"Added wicens entry to cron(cru)\"   # added by wicens $(F_date r)"
-				} >> /jffs/scripts/services-start
+				#{
+					#F_printfstr "/usr/sbin/cru a wicens \"*/${cron_check_freq} * * * * $script_name_full cron\"   # added by wicens $(F_date r)"
+					#F_printfstr "/usr/bin/logger -t \"services-start[\$\$]\" \"Added wicens entry to cron(cru)\"   # added by wicens $(F_date r)"
+				#} >> /jffs/scripts/services-start
 
-				F_log_terminal_ok "Added entry in /jffs/scripts/services-start for cron(cru)"
-			else
-				{
-					F_printfstr "#!/bin/sh"
-					F_printfstr "# Created by $script_name_full for WAN IP change notification $(F_date r)"
-					F_printfstr "/usr/sbin/cru a wicens \"*/${cron_check_freq} * * * * $script_name_full cron\"   # added by wicens $(F_date r)"
-					F_printfstr "/usr/bin/logger -t \"services-start[\$\$]\" \"Added wicens entry to cron(cru)\"   # added by wicens $(F_date r)"
-				} > /jffs/scripts/services-start
+				#F_log_terminal_ok "Added entry in /jffs/scripts/services-start for cron(cru)"
+			#else
+				#{
+				#	F_printfstr "#!/bin/sh"
+				#	F_printfstr "# Created by $script_name_full for WAN IP change notification $(F_date r)"
+				#	F_printfstr "/usr/sbin/cru a wicens \"*/${cron_check_freq} * * * * $script_name_full cron\"   # added by wicens $(F_date r)"
+				#	F_printfstr "/usr/bin/logger -t \"services-start[\$\$]\" \"Added wicens entry to cron(cru)\"   # added by wicens $(F_date r)"
+				#} > /jffs/scripts/services-start
 
-				F_chmod '/jffs/scripts/services-start'
-				F_log_terminal_ok "Created /jffs/scripts/services-start and added entry for cron(cru)"
-			fi
+				#F_chmod '/jffs/scripts/services-start'
+				#F_log_terminal_ok "Created /jffs/scripts/services-start and added entry for cron(cru)"
+			#fi
 		;;
 
 		'remove')
