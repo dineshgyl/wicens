@@ -1410,7 +1410,7 @@ F_notify_firmware() {
 
 				{
 					F_printfstr "(sh /jffs/scripts/$script_name fwupdate) & wicenspid=\$!   # added by wicens $(F_date r)"
-					F_printfstr "/usr/bin/logger -t \"update-notification[\$\$]\" \"Started wicens with pid \$wicenspid\"   # added by wicens $(F_date r)"
+					F_printfstr "/usr/bin/logger -p 5 -t \"update-notification[\$\$]\" \"Started wicens with pid \$wicenspid\"   # added by wicens $(F_date r)"
 				} >> /jffs/scripts/update-notification
 
 				F_log_terminal_ok "Created entry in /jffs/scripts/update-notification for fw update"
@@ -1419,7 +1419,7 @@ F_notify_firmware() {
 					F_printfstr '#!/bin/sh'
 					F_printfstr "# Created by $script_name_full for WAN IP change notification   # added by wicens $(F_date r)"
 					F_printfstr "(sh $script_name_full fwupdate) & wicenspid=\$!  # added by wicens $(F_date r)"
-					F_printfstr "/usr/bin/logger -t \"update-notification[\$\$]\" \"Started wicens with pid \$wicenspid\"   # added by wicens $(F_date r)"
+					F_printfstr "/usr/bin/logger -p 5 -t \"update-notification[\$\$]\" \"Started wicens with pid \$wicenspid\"   # added by wicens $(F_date r)"
 				} > /jffs/scripts/update-notification
 
 				F_chmod '/jffs/scripts/update-notification'
@@ -1509,7 +1509,7 @@ F_notify_reboot() {
 
 				{
 					F_printfstr "(sh /jffs/scripts/wicens.sh reboot) & wicenspid=\$!   # added by reboot wicens $(F_date r)"
-					F_printfstr "/usr/bin/logger -t \"services-start[\$\$]\" \"Started wicens for reboot notification with pid \$wicenspid\"   # added by reboot wicens $(F_date r)"
+					F_printfstr "/usr/bin/logger -p 5 -t \"services-start[\$\$]\" \"Started wicens for reboot notification with pid \$wicenspid\"   # added by reboot wicens $(F_date r)"
 				} >> /jffs/scripts/services-start
 
 				F_log_terminal_ok "Added entry to /jffs/scripts/services-start for reboot"
@@ -1518,7 +1518,7 @@ F_notify_reboot() {
 					F_printfstr "#!/bin/sh"
 					F_printfstr "# Created by $script_name_full for router reboot notification   # added by reboot wicens $(F_date r)"
 					F_printfstr "(nohup sh /jffs/scripts/wicens.sh reboot) & wicenspid=\$!   # added by reboot wicens $(F_date r)"
-					F_printfstr "/usr/bin/logger -t \"services-start[\$\$]\" \"Started wicens for reboot notification with pid \$wicenspid\"   # added by reboot wicens $(F_date r)"
+					F_printfstr "/usr/bin/logger -p 5 -t \"services-start[\$\$]\" \"Started wicens for reboot notification with pid \$wicenspid\"   # added by reboot wicens $(F_date r)"
 				} > /jffs/scripts/services-start
 
 				F_chmod '/jffs/scripts/services-start'
@@ -3285,7 +3285,7 @@ F_serv_start() {
 
 				#{
 					#F_printfstr "/usr/sbin/cru a wicens \"*/${cron_check_freq} * * * * $script_name_full cron\"   # added by wicens $(F_date r)"
-					#F_printfstr "/usr/bin/logger -t \"services-start[\$\$]\" \"Added wicens entry to cron(cru)\"   # added by wicens $(F_date r)"
+					#F_printfstr "/usr/bin/logger -p 5 -t \"services-start[\$\$]\" \"Added wicens entry to cron(cru)\"   # added by wicens $(F_date r)"
 				#} >> /jffs/scripts/services-start
 
 				#F_log_terminal_ok "Added entry in /jffs/scripts/services-start for cron(cru)"
@@ -3294,7 +3294,7 @@ F_serv_start() {
 				#	F_printfstr "#!/bin/sh"
 				#	F_printfstr "# Created by $script_name_full for WAN IP change notification $(F_date r)"
 				#	F_printfstr "/usr/sbin/cru a wicens \"*/${cron_check_freq} * * * * $script_name_full cron\"   # added by wicens $(F_date r)"
-				#	F_printfstr "/usr/bin/logger -t \"services-start[\$\$]\" \"Added wicens entry to cron(cru)\"   # added by wicens $(F_date r)"
+				#	F_printfstr "/usr/bin/logger -p 5 -t \"services-start[\$\$]\" \"Added wicens entry to cron(cru)\"   # added by wicens $(F_date r)"
 				#} > /jffs/scripts/services-start
 
 				#F_chmod '/jffs/scripts/services-start'
@@ -3345,7 +3345,7 @@ F_wan_event() {
 
 				{
 					F_printfstr "[ \"\$2\" = \"connected\" ] && (nohup sh $script_name_full wancall) & wicenspid=\$!  # added by wicens $(F_date r)"
-					F_printfstr "[ \"\$2\" = \"connected\" ] && /usr/bin/logger -t \"wan-event[\$\$]\" \"Started wicens with pid \$wicenspid\"   # added by wicens $(F_date r)"
+					F_printfstr "[ \"\$2\" = \"connected\" ] && /usr/bin/logger -p 5 -t \"wan-event[\$\$]\" \"Started wicens with pid \$wicenspid\"   # added by wicens $(F_date r)"
 				} >> /jffs/scripts/wan-event
 
 				F_log_terminal_ok "Added entry in /jffs/scripts/wan-event with connected event trigger"
@@ -3354,7 +3354,7 @@ F_wan_event() {
 					F_printfstr "#!/bin/sh"
 					F_printfstr "# Created by $script_name_full for WAN IP change notification   # added by wicens $(F_date r)"
 					F_printfstr "[ \"\$2\" = \"connected\" ] && (/bin/sh $script_name_full wancall) & wicenspid=\$!   # added by wicens $(F_date r)"
-					F_printfstr "[ \"\$2\" = \"connected\" ] && /usr/bin/logger -t \"wan-event[\$\$]\" \"Started wicens with pid \$wicenspid\"   # added by wicens $(F_date r)"
+					F_printfstr "[ \"\$2\" = \"connected\" ] && /usr/bin/logger -p 5 -t \"wan-event[\$\$]\" \"Started wicens with pid \$wicenspid\"   # added by wicens $(F_date r)"
 				} > /jffs/scripts/wan-event
 
 				F_chmod '/jffs/scripts/wan-event'
