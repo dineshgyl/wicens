@@ -3089,7 +3089,7 @@ F_internet_check() {
 			break
 		else
 			F_log_terminal_fail "Failed pinging $(F_test_sites | wc -l) test sites in $cycle_ping_count ping attempts"
-			wait_secs=30
+			wait_secs=60
 
 			while [ "$wait_secs" -ne 0 ] ; do
 				F_term_waitdel "$wait_secs before next attempt"
