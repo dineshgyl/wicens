@@ -22,8 +22,8 @@ export PATH="/sbin:/bin:/usr/sbin:/usr/bin:$PATH"
 start_time="$(awk '{print $1}' < /proc/uptime)"   # for calc menu load time in ms
 
 # START ###############################################################################################################
-script_version='4.02'
-script_ver_date='June 14 2024'
+script_version='4.03'
+script_ver_date='January 8 2025'
 current_core_config='4.0'   # version of core config (F_default_update_create)
 current_user_config='4.0'   # version of user config (F_default_user_create)
 
@@ -2316,7 +2316,7 @@ F_fw_update_email_msg() {
 		F_printfstr "From: \"${user_email_from}\" <$user_from_addr>"
 		F_printfstr "To: \"wicens user\" <$user_send_to_addr>"
 		[ -n "$user_send_to_cc" ] && F_printfstr "Cc: $user_send_to_cc"
-		F_printfstr "Subject: Firmware Update version $new_fw_ver_pretty available"
+		F_printfstr "Subject: Firmware Update version $new_fw_ver_pretty available for $fw_device_model $fw_pulled_device_name"
 		F_printfstr "Date: $(F_date r)"
 
 		# mime
@@ -2390,7 +2390,7 @@ F_script_update_email_msg() {
 		F_printfstr "From: \"${user_email_from}\" <$user_from_addr>"
 		F_printfstr "To: \"wicens user\" <$user_send_to_addr>"
 		[ -n "$user_send_to_cc" ] && F_printfstr "Cc: $user_send_to_cc"
-		F_printfstr "Subject: Update available for wicens script"
+		F_printfstr "Subject: Update available for wicens script on $fw_device_model $fw_pulled_device_name"
 		F_printfstr "Date: $(F_date r)"
 
 		# mime
@@ -2467,7 +2467,7 @@ F_reboot_email_msg() {
 		F_printfstr "From: \"${user_email_from}\" <$user_from_addr>"
 		F_printfstr "To: \"wicens user\" <$user_send_to_addr>"
 		[ -n "$user_send_to_cc" ] && F_printfstr "Cc: $user_send_to_cc"
-		F_printfstr "Subject: Your $fw_device_model router has rebooted"
+		F_printfstr "Subject: Your router $fw_device_model $fw_pulled_device_name has rebooted"
 		F_printfstr "Date: $(F_date r)"
 
 		# mime
@@ -2542,7 +2542,7 @@ F_wanip_email_msg() {
 		F_printfstr "From: \"${user_email_from}\" <$user_from_addr>"
 		F_printfstr "To: \"wicens user\" <$user_send_to_addr>"
 		[ -n "$user_send_to_cc" ] && F_printfstr "Cc: $user_send_to_cc"
-		if [ -z "$user_custom_subject" ] ; then F_printfstr "Subject: WAN IP has changed on $fw_device_model" ; else F_printfstr "Subject: $formatted_custom_subject" ; fi
+		if [ -z "$user_custom_subject" ] ; then F_printfstr "Subject: WAN IP has changed on $fw_device_model $fw_pulled_device_name" ; else F_printfstr "Subject: $formatted_custom_subject" ; fi
 		F_printfstr "Date: $(F_date r)"
 
 		# mime
