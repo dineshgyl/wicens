@@ -16,7 +16,6 @@
 # found in amtm thanks to @thelonelycoder
 # shellcheck disable=SC2039,SC2183,SC2104,SC1090,SC2154,SC2034
 # hex expr   menuprintf   continuefunc   constantsource   unassvar   unusedvar
-#
 
 [ "$1" = 'debug' ] && shift && set -x
 export PATH="/sbin:/bin:/usr/sbin:/usr/bin:$PATH"
