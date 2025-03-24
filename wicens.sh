@@ -3313,7 +3313,7 @@ F_cru() {
 
 		'create')
 			cru a wicens "0 9 */${cron_check_freq} * * $script_name_full cron"
-			F_log_terminal_ok "Added entry in cron(cru) with ${cron_check_freq}m interval"
+			F_log_terminal_ok "Added entry in cron(cru) with ${cron_check_freq}d interval"
 		;;
 
 		'remove')
