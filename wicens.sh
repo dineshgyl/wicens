@@ -10,19 +10,32 @@
 #                                                                              #
 ################################################################################
 # Thanks to all who contribute(d) at SNBforums, pieces of your code are here ;)
-# written by maverickcdn
+# written by maverickcdn bharat
 # github.com/maverickcdn/wicens
 # SNBforums thread https://www.snbforums.com/threads/wicens-wan-ip-change-email-notification-script.69294/
 # found in amtm thanks to @thelonelycoder
 # shellcheck disable=SC2039,SC2183,SC2104,SC1090,SC2154,SC2034
 # hex expr   menuprintf   continuefunc   constantsource   unassvar   unusedvar
+#
+# Commands to customize the script.
+#rm wicens.sh
+#cp wicens.sh.orig wicens.sh
+#sed -i "s/script_version='4.10'/script_version='4.11'/" wicens.sh
+#sed -i 's/written by maverickcdn/written by maverickcdn bharat/' wicens.sh
+#sed -i -E 's|^script_git_src=.*|script_git_src='\''https://raw.githubusercontent.com/dineshgyl/wicens/master/'\'' #\0|' wicens.sh
+#sed -i -E 's|^(mail_log=.*wicens_email\.log.*)|mail_log='\''/tmp/wicens_email.log'\''            # log file for sendmail/curl #\1|' wicens.sh
+#
+#sed -i 's|\*/${cron_check_freq} \* \* \* \*|0 9 */${cron_check_freq} * *|' wicens.sh
+#sed -i '/cron_check_freq/ {s/\<mins\>/days/g; s/\<minutes\>/days/g}' wicens.sh
+#diff -U 0 wicens.sh.orig wicens.sh
+
 
 [ "$1" = 'debug' ] && shift && set -x
 export PATH="/sbin:/bin:/usr/sbin:/usr/bin:$PATH"
 start_time="$(awk '{print $1}' < /proc/uptime)"   # for calc menu load time in ms
 
 # START ###############################################################################################################
-script_version='4.10'
+script_version='4.11'
 script_ver_date='Feb 3 2025'
 current_core_config='4.1'   # version of core config (F_default_update_create)
 current_user_config='4.0'   # version of user config (F_default_user_create)
@@ -30,8 +43,7 @@ current_user_config='4.0'   # version of user config (F_default_user_create)
 script_name="$(basename "$0")"
 script_name_full="/jffs/scripts/$script_name"
 script_dir='/jffs/addons/wicens'
-#script_git_src='https://raw.githubusercontent.com/maverickcdn/wicens/master/'
-script_git_src='https://raw.githubusercontent.com/dineshgyl/wicens/master/'
+script_git_src='https://raw.githubusercontent.com/dineshgyl/wicens/master/' #script_git_src='https://raw.githubusercontent.com/maverickcdn/wicens/master/'
 run_option="$1"
 case "$1" in '') run_option='tty' ;; esac   # used to show tty vs cron/test/wancall/fwupdate/send run
 config_src="${script_dir}/wicens_user_config.wic"   # user settings
@@ -43,8 +55,7 @@ reboot_email='/tmp/wicens_rebootmail.txt'   # reboot notification mail text
 fw_email='/tmp/wicens_fwmail.txt'   # firmware update notification mail text
 update_email='/tmp/wicens_updatemail.txt'   # script update notification mail text
 wanip_email='/tmp/wicens_wanipemail.txt'   # wanip change notification mail text
-mail_log="${script_dir}/wicens_email.log"   # log file for sendmail/curl
-mail_log='/tmp/wicens_email.log'            # log file for sendmail/curl
+mail_log='/tmp/wicens_email.log'            # log file for sendmail/curl #mail_log="${script_dir}/wicens_email.log"   # log file for sendmail/curl
 script_lock="/tmp/wicens_lock.$run_option"   # script temp lock file by argument
 internet_lock="/tmp/wicens_internetlock.$run_option"   # internet check lock, prevents killing processes waiting for internet
 wicens_send_retry='/tmp/wicens_send.retry'   # retry count file for send option
@@ -53,8 +64,7 @@ wicens_update_retry='/tmp/wicens_update.retry'   # retry count file for script u
 wicens_fw_retry='/tmp/wicens_fw.retry'   # retry count file for fw update notification
 wicens_wanip_retry='/tmp/wicens_wanip.retry'   # retry count file for wan ip change notification
 wicens_reboot_retry='/tmp/wicens_reboot.retry'   # retry count file for reboot notification
-#script_log_loc="${script_dir}/wicens.log"   # script independent log
-script_log_loc="/tmp/wicens.log"   # script independent log
+script_log_loc="${script_dir}/wicens.log"   # script independent log
 cred_loc="${script_dir}/.wicens_cred.enc"
 cred_loc_bak="${cred_loc}bak"
 amtm_email_conf='/jffs/addons/amtm/mail/email.conf'
@@ -508,7 +518,7 @@ F_default_update_create() {
 		F_printfstr "wan_history_count=5   # number of historcal IPs in Email message"
 		F_printfstr "retry_wait_period=14400   # period between failed email retries default:4 hrs"
 		F_printfstr "max_email_retry=3   # max cron run retries before waiting for retry_period default:3"
-		F_printfstr "cron_check_freq=11   # minutes between cron checks default:11"
+		F_printfstr "cron_check_freq=11   # days between cron checks default:11"
 		F_printfstr "wan_event_wait=40   # sleep before compare after wan-event call default:40"
 		F_printfstr "reboot_notify_wait=20   # sleep before reboot notify services-start call default:20"
 		F_printfstr "max_fw_nvram_check=600   # fw checks to nvram only every 10 minutes with tty default:600"
@@ -633,7 +643,7 @@ F_opt_about() {
 		F_printfstr "saved in the config ie. wicens send /path/email.txt myadd@mail.com           " ; F_printfstr ''
 
 		F_printfstr "Should Email sending fail the script will retry 4 more times with cron       "
-		F_printfstr "1/${cron_check_freq}mins) in $update_period second intervals.                " ; F_printfstr ''
+		F_printfstr "1/${cron_check_freq}days) in $update_period second intervals.                " ; F_printfstr ''
 
 		F_printfstr "Script generates a lock file /tmp/wicens_lock.$run_option to prevent         "
 		F_printfstr "duplicate runs as well as /tmp/wicens_internet_lock.$run_option              "
@@ -1461,7 +1471,7 @@ F_notify_firmware() {
 
 				{
 					F_printfstr "(sh /jffs/scripts/$script_name fwupdate) & wicenspid=\$!   # added by wicens $(F_date r)"
-					F_printfstr "/usr/bin/logger -p 5 -t \"update-notification[\$\$]\" \"Started wicens with pid \$wicenspid\"   # added by wicens $(F_date r)"
+					F_printfstr "/usr/bin/logger -t \"update-notification[\$\$]\" \"Started wicens with pid \$wicenspid\"   # added by wicens $(F_date r)"
 				} >> /jffs/scripts/update-notification
 
 				F_log_terminal_ok "Created entry in /jffs/scripts/update-notification for fw update"
@@ -1470,7 +1480,7 @@ F_notify_firmware() {
 					F_printfstr '#!/bin/sh'
 					F_printfstr "# Created by $script_name_full for WAN IP change notification   # added by wicens $(F_date r)"
 					F_printfstr "(sh $script_name_full fwupdate) & wicenspid=\$!  # added by wicens $(F_date r)"
-					F_printfstr "/usr/bin/logger -p 5 -t \"update-notification[\$\$]\" \"Started wicens with pid \$wicenspid\"   # added by wicens $(F_date r)"
+					F_printfstr "/usr/bin/logger -t \"update-notification[\$\$]\" \"Started wicens with pid \$wicenspid\"   # added by wicens $(F_date r)"
 				} > /jffs/scripts/update-notification
 
 				F_chmod '/jffs/scripts/update-notification'
@@ -1560,7 +1570,7 @@ F_notify_reboot() {
 
 				{
 					F_printfstr "(sh /jffs/scripts/wicens.sh reboot) & wicenspid=\$!   # added by reboot wicens $(F_date r)"
-					F_printfstr "/usr/bin/logger -p 5 -t \"services-start[\$\$]\" \"Started wicens for reboot notification with pid \$wicenspid\"   # added by reboot wicens $(F_date r)"
+					F_printfstr "/usr/bin/logger -t \"services-start[\$\$]\" \"Started wicens for reboot notification with pid \$wicenspid\"   # added by reboot wicens $(F_date r)"
 				} >> /jffs/scripts/services-start
 
 				F_log_terminal_ok "Added entry to /jffs/scripts/services-start for reboot"
@@ -1569,7 +1579,7 @@ F_notify_reboot() {
 					F_printfstr "#!/bin/sh"
 					F_printfstr "# Created by $script_name_full for router reboot notification   # added by reboot wicens $(F_date r)"
 					F_printfstr "(nohup sh /jffs/scripts/wicens.sh reboot) & wicenspid=\$!   # added by reboot wicens $(F_date r)"
-					F_printfstr "/usr/bin/logger -p 5 -t \"services-start[\$\$]\" \"Started wicens for reboot notification with pid \$wicenspid\"   # added by reboot wicens $(F_date r)"
+					F_printfstr "/usr/bin/logger -t \"services-start[\$\$]\" \"Started wicens for reboot notification with pid \$wicenspid\"   # added by reboot wicens $(F_date r)"
 				} > /jffs/scripts/services-start
 
 				F_chmod '/jffs/scripts/services-start'
@@ -2698,7 +2708,7 @@ F_wanip_email_msg() {
 		F_log_show "Are your Email settings in this script correct? and password?"
 		F_log_show "Or maybe your Email host server was temporarily down?"
 		F_log_show "Main Menu - option L||l to view errors - P||p to re-enter password"
-		[ "$test_mode" = 0 ] && F_log_show "Resetting WAN IP to old WAN IP to attempt again in ${cron_check_freq} minutes"
+		[ "$test_mode" = 0 ] && F_log_show "Resetting WAN IP to old WAN IP to attempt again in ${cron_check_freq} days"
 		cat "$mail_log" >> "$script_log_loc"
 
 		F_replace_var saved_wan_date "$original_wan_date" "$config_src"
@@ -3315,8 +3325,8 @@ F_cru() {
 		;;
 
 		'create')
-			#cru a wicens "*/${cron_check_freq} * * * * $script_name_full cron"
-			#F_log_terminal_ok "Added entry in cron(cru) with ${cron_check_freq}m interval"
+			cru a wicens "0 9 */${cron_check_freq} * * $script_name_full cron"
+			F_log_terminal_ok "Added entry in cron(cru) with ${cron_check_freq}m interval"
 		;;
 
 		'remove')
@@ -3335,37 +3345,37 @@ F_serv_start() {
 	case "$1" in
 		'check')
 			grep -Fq "$script_name_full cron" /jffs/scripts/services-start 2> /dev/null && return 0
-			#return 1
+			return 1
 		;;
 
 		'create')
-			#if [ -f /jffs/scripts/services-start ] ; then
+			if [ -f /jffs/scripts/services-start ] ; then
 				F_crlf '/jffs/scripts/services-start'
 				F_chmod '/jffs/scripts/services-start'
 
-				#if ! grep -Fq '#!/bin/sh' /jffs/scripts/services-start ; then
-				#	sed -i '1 i\#!/bin/sh' /jffs/scripts/services-start
-				#	F_log_terminal_fail "Your services-start does not contain a '#!/bin/sh'"
-				#	F_log_terminal_ok "Added #!/bin/sh to top of services-start file"
-				#fi
+				if ! grep -Fq '#!/bin/sh' /jffs/scripts/services-start ; then
+					sed -i '1 i\#!/bin/sh' /jffs/scripts/services-start
+					F_log_terminal_fail "Your services-start does not contain a '#!/bin/sh'"
+					F_log_terminal_ok "Added #!/bin/sh to top of services-start file"
+				fi
 
-				#{
-					#F_printfstr "/usr/sbin/cru a wicens \"*/${cron_check_freq} * * * * $script_name_full cron\"   # added by wicens $(F_date r)"
-					#F_printfstr "/usr/bin/logger -p 5 -t \"services-start[\$\$]\" \"Added wicens entry to cron(cru)\"   # added by wicens $(F_date r)"
-				#} >> /jffs/scripts/services-start
+				{
+					F_printfstr "/usr/sbin/cru a wicens \"0 9 */${cron_check_freq} * * $script_name_full cron\"   # added by wicens $(F_date r)"
+					F_printfstr "/usr/bin/logger -t \"services-start[\$\$]\" \"Added wicens entry to cron(cru)\"   # added by wicens $(F_date r)"
+				} >> /jffs/scripts/services-start
 
-				#F_log_terminal_ok "Added entry in /jffs/scripts/services-start for cron(cru)"
-			#else
-				#{
-				#	F_printfstr "#!/bin/sh"
-				#	F_printfstr "# Created by $script_name_full for WAN IP change notification $(F_date r)"
-				#	F_printfstr "/usr/sbin/cru a wicens \"*/${cron_check_freq} * * * * $script_name_full cron\"   # added by wicens $(F_date r)"
-				#	F_printfstr "/usr/bin/logger -p 5 -t \"services-start[\$\$]\" \"Added wicens entry to cron(cru)\"   # added by wicens $(F_date r)"
-				#} > /jffs/scripts/services-start
+				F_log_terminal_ok "Added entry in /jffs/scripts/services-start for cron(cru)"
+			else
+				{
+					F_printfstr "#!/bin/sh"
+					F_printfstr "# Created by $script_name_full for WAN IP change notification $(F_date r)"
+					F_printfstr "/usr/sbin/cru a wicens \"0 9 */${cron_check_freq} * * $script_name_full cron\"   # added by wicens $(F_date r)"
+					F_printfstr "/usr/bin/logger -t \"services-start[\$\$]\" \"Added wicens entry to cron(cru)\"   # added by wicens $(F_date r)"
+				} > /jffs/scripts/services-start
 
-				#F_chmod '/jffs/scripts/services-start'
-				#F_log_terminal_ok "Created /jffs/scripts/services-start and added entry for cron(cru)"
-			#fi
+				F_chmod '/jffs/scripts/services-start'
+				F_log_terminal_ok "Created /jffs/scripts/services-start and added entry for cron(cru)"
+			fi
 		;;
 
 		'remove')
@@ -3411,7 +3421,7 @@ F_wan_event() {
 
 				{
 					F_printfstr "[ \"\$2\" = \"connected\" ] && (nohup sh $script_name_full wancall) & wicenspid=\$!  # added by wicens $(F_date r)"
-					F_printfstr "[ \"\$2\" = \"connected\" ] && /usr/bin/logger -p 5 -t \"wan-event[\$\$]\" \"Started wicens with pid \$wicenspid\"   # added by wicens $(F_date r)"
+					F_printfstr "[ \"\$2\" = \"connected\" ] && /usr/bin/logger -t \"wan-event[\$\$]\" \"Started wicens with pid \$wicenspid\"   # added by wicens $(F_date r)"
 				} >> /jffs/scripts/wan-event
 
 				F_log_terminal_ok "Added entry in /jffs/scripts/wan-event with connected event trigger"
@@ -3420,7 +3430,7 @@ F_wan_event() {
 					F_printfstr "#!/bin/sh"
 					F_printfstr "# Created by $script_name_full for WAN IP change notification   # added by wicens $(F_date r)"
 					F_printfstr "[ \"\$2\" = \"connected\" ] && (/bin/sh $script_name_full wancall) & wicenspid=\$!   # added by wicens $(F_date r)"
-					F_printfstr "[ \"\$2\" = \"connected\" ] && /usr/bin/logger -p 5 -t \"wan-event[\$\$]\" \"Started wicens with pid \$wicenspid\"   # added by wicens $(F_date r)"
+					F_printfstr "[ \"\$2\" = \"connected\" ] && /usr/bin/logger -t \"wan-event[\$\$]\" \"Started wicens with pid \$wicenspid\"   # added by wicens $(F_date r)"
 				} > /jffs/scripts/wan-event
 
 				F_chmod '/jffs/scripts/wan-event'
@@ -3758,7 +3768,7 @@ F_status() {
 	fi
 
 	[ -n "$user_script_call_time" ] && F_status_grn "Custom script call time" "$user_script_call_time"
-	F_status_grn "Cron run interval" "${cron_check_freq} minutes"
+	F_status_grn "Cron run interval" "${cron_check_freq} days"
 	F_status_grn "Number of cron checks" "$cron_run_count"
 	F_status_grn "Number of wan-event checks" "$wancall_run_count"
 	F_status_grn "Total IP changes" "$ip_change_count"
@@ -3996,7 +4006,7 @@ F_main_menu() {
 				clear
 				cat "$script_log_loc"
 			else
-				F_terminal_check_fail "$script_log_loc does not exist"
+				F_terminal_check_fail "/jffs/addons/wicens/wicens.log does not exist"
 			fi
 			F_menu_exit
 		;;
