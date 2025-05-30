@@ -12,8 +12,9 @@ sed -i 's/\(${cron_check_freq}\)m/\1d/g' wicens.sh
 sed -i '/cron_check_freq/ {s/\<mins\>/days/g; s/\<minutes\>/days/g}' wicens.sh
 diff -U 0 wicens.sh.orig wicens.sh
 
-
+======================
 New Version: 4.11
+======================
 
 cd /tmp
 curl -fsL --retry 2 --retry-delay 3 --connect-timeout 3 https://raw.githubusercontent.com/maverickcdn/wicens/master/wicens.sh > wicens.sh
